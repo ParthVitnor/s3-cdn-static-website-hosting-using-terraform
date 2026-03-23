@@ -10,7 +10,6 @@ variable "bucket_name" {
 
 variable "cloudfront-oac-name" {
     default = "OAC-static-web-hosting"
-  
 }
 
 
