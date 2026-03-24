@@ -79,3 +79,29 @@ resource "aws_s3_bucket_policy" "allow_cloudfront_access" {
   
 }
 
+
+resource "aws_s3_object" "website_files" {
+  bucket = aws_s3_bucket.website_bucket.id
+
+  for_each = fileset("${path.module}/website_source_code", "**/*")
+  key    = each.key
+  source = "${path.module}/website_source_code/${each.key}"
+  etag = filemd5("${path.module}/website_source_code/${each.key}")
+
+  content_type = lookup(
+    {
+      "html" = "text/html",
+      "css"  = "text/css",
+      "js"   = "application/javascript",
+      "png"  = "image/png",
+      "jpg"  = "image/jpeg",
+      "jpeg" = "image/jpeg",
+      "gif"  = "image/gif"
+      "svg"  = "image/svg+xml"
+      "json" = "application/json"
+    },
+    split(".", each.key)[length(split(".", each.key)) - 1],
+    "application/octet-stream"
+  )
+}
+
